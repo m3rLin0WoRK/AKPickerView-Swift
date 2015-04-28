@@ -28,7 +28,7 @@ Protocols to specify the number and type of contents.
 	func numberOfItemsInPickerView(pickerView: AKPickerView) -> Int
 	optional func pickerView(pickerView: AKPickerView, titleForItem item: Int) -> String
 	optional func pickerView(pickerView: AKPickerView, imageForItem item: Int) -> UIImage
-    optional func pickerView(pickerView: AKPickerView, highlightedImageForItem item: Int) -> UIImage
+    optional func pickerView(pickerView: AKPickerView, highlightedImageForItem item: Int) -> UIImage?
 }
 
 // MARK: AKPickerViewDelegate
@@ -495,7 +495,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 			}
 		}
 	}
-
+    
 	// MARK: UICollectionViewDataSource
 	public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
 		return 1
