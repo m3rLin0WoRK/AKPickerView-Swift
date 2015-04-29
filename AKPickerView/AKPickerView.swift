@@ -60,6 +60,8 @@ private class AKCollectionViewCell: UICollectionViewCell {
 	var imageView: UIImageView!
 	var font = UIFont.systemFontOfSize(UIFont.systemFontSize())
 	var highlightedFont = UIFont.systemFontOfSize(UIFont.systemFontSize())
+    var image: UIImage?
+    var highlightedImage: UIImage?
 	var _selected: Bool = false {
 		didSet(selected) {
 			let animation = CATransition()
@@ -67,6 +69,8 @@ private class AKCollectionViewCell: UICollectionViewCell {
 			animation.duration = 0.15
 			self.label.layer.addAnimation(animation, forKey: "")
 			self.label.font = self.selected ? self.highlightedFont : self.font
+            self.imageView.image = nil
+            self.imageView.image = !self.selected ? self.image : (self.highlightedImage ?? self.image)
 		}
 	}
 
@@ -457,7 +461,7 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 	:param: notifySelection True if the delegate method should be called, false if not.
 	*/
 	private func selectItem(item: Int, animated: Bool, notifySelection: Bool) {
-		self.collectionView.selectItemAtIndexPath(
+        self.collectionView.selectItemAtIndexPath(
 			NSIndexPath(forItem: item, inSection: 0),
 			animated: animated,
 			scrollPosition: .None)
@@ -466,8 +470,18 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		if notifySelection {
 			self.delegate?.pickerView?(self, didSelectItem: item)
 		}
+        self.updateSelectedCell()
 	}
 
+    private func updateSelectedCell() {
+        //Update selection
+        for cell in self.collectionView.visibleCells() {
+            if let indexPath = self.collectionView.indexPathForCell(cell as! UICollectionViewCell) {
+                (cell as! AKCollectionViewCell)._selected = (indexPath.item == self.selectedItem)
+            }
+        }
+    }
+    
 	// MARK: Delegate Handling
 	/**
 	Private.
@@ -522,8 +536,10 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 				}
 			}
 		} else if let image = self.dataSource?.pickerView?(self, imageForItem: indexPath.item) {
-			cell.imageView.image = image
-            cell.imageView.highlightedImage = self.dataSource?.pickerView?(self, highlightedImageForItem: indexPath.item)
+            let highlightedImage = self.dataSource?.pickerView?(self, highlightedImageForItem: indexPath.item)
+            
+            cell.image = image
+            cell.highlightedImage = highlightedImage
 		}
 		cell._selected = (indexPath.item == self.selectedItem)
 		return cell
