@@ -603,6 +603,22 @@ public class AKPickerView: UIView, UICollectionViewDataSource, UICollectionViewD
 		CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
 		self.collectionView.layer.mask?.frame = self.collectionView.bounds
 		CATransaction.commit()
+        
+        //change selected on scroll
+        switch self.pickerViewStyle {
+        case .Flat:
+            let center = self.convertPoint(self.collectionView.center, toView: self.collectionView)
+            if let indexPath = self.collectionView.indexPathForItemAtPoint(center) {
+                self.collectionView.selectItemAtIndexPath(
+                    NSIndexPath(forItem: indexPath.item, inSection: 0),
+                    animated: false,
+                    scrollPosition: .None)
+                self.selectedItem = indexPath.item
+                self.updateSelectedCell()
+            }
+        default: break
+        }
+
 	}
 
 	// MARK: AKCollectionViewLayoutDelegate
